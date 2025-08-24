@@ -1,7 +1,19 @@
+import { db } from '../db';
+import { screenshotsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
+
 export async function deleteScreenshot(id: number): Promise<boolean> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting a screenshot from the database and optionally from file system.
-    // Should delete from screenshotsTable and handle file cleanup if needed.
-    // Returns true if deletion was successful, false if screenshot was not found.
-    return Promise.resolve(false); // Placeholder - should return actual result
+  try {
+    // Delete the screenshot record from the database
+    const result = await db.delete(screenshotsTable)
+      .where(eq(screenshotsTable.id, id))
+      .returning()
+      .execute();
+
+    // Return true if a record was deleted, false if no record was found
+    return result.length > 0;
+  } catch (error) {
+    console.error('Screenshot deletion failed:', error);
+    throw error;
+  }
 }
